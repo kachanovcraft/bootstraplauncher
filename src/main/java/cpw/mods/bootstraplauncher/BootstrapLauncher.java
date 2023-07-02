@@ -57,13 +57,18 @@ public class BootstrapLauncher {
         // Map of filenames to their 'module number', where all filenames sharing the same 'module number' is combined into one
         var filenameMap = getMergeFilenameMap();
         // Map of 'module number' to the list of paths which are combined into that module
-        var mergeMap = new LinkedHashMap<String, List<Path>>();
 
+        var workdir = Paths.get("").toAbsolutePath().toString();
+        var mergeMap = new LinkedHashMap<String, List<Path>>();
         var order = new ArrayList<String>();
+
 
         outer:
         for (var legacy : legacyClasspath) {
-            var path = Paths.get(legacy);
+            var path = Paths.get(legacy).toAbsolutePath();
+            if(!legacy.startsWith(workdir)) {
+                continue;
+            }
             var filename = path.getFileName().toString();
 
             for (var filter : ignores) {
